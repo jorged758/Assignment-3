@@ -1,0 +1,23 @@
+<!-- Includes the header section from layouts  -->
+<%- include("../../layouts/header/index.ejs") %>
+
+    <div class="container mb-5">
+        <h1 style="text-align:center;margin-bottom: 30px;margin-top: 30px;">Latest Blogs</h1>
+        <div class="row">
+
+            <!-- map() creates a new array from calling a function for every array element -->
+            <!-- all blogs data are looped through map function and every element is passed to card component  -->
+            <% blogs.map((item,index)=>{ %>
+                <%- include("../../layouts/card/index.ejs",{item: item}) %>
+                    <% }) %>
+        </div>
+    </div>
+<!-- Includes the footer section from layouts  -->
+    <%- include("../../layouts/footer/index.ejs") %>
+
+
+
+
+        </body>
+
+        </html>

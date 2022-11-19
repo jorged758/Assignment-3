@@ -1,0 +1,21 @@
+<!-- MAP items are passed into te section to display blog relevant data -->
+<div class="col-md-4 mt-3">
+  <div class="card">
+    <img
+      class="card-img-top"
+      src="<%= item.image %>"
+      alt="Card image cap"
+      width="350"
+      height="200"
+    />
+    <div class="card-body">
+      <h5 class="card-title"><%= item.heading %></h5>
+      <p class="card-text">
+        <strong>Short description: </strong><%= item.short_description %>
+      </p>
+      <p class="card-text">
+        <strong>Long description: </strong><%= item.long_description %>
+      </p>
+    </div>
+  </div>
+</div>

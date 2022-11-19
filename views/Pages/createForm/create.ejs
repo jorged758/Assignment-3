@@ -1,0 +1,150 @@
+<%- include("../../layouts/header/index.ejs") %>
+
+    <div class="container mb-5">
+        <h1 style="text-align:center;margin-bottom: 30px;margin-top: 30px;">Create Blog</h1>
+        <div class="row">
+                    <form class="row g-3 needs-validation" novalidate action="" enctype="multipart/form-data"
+                        id="blog_form">
+                        <div class="col-md-12">
+                            <label for="validationCustom01" class="form-label">Heading</label>
+                            <!-- Checking the variable blog and its subitems to identify, blo doesnt ot undefined, if blog is undefined then  it will not match condition and doesnt render it -->
+                            <!-- Checking is performed because edit/create have same form so in updation, we sent blog variable to display edited blog data else it will not be displayed  -->
+                            <input type="text" class="form-control" id="heading" name="heading" required <%
+                                if(locals.blog && blog){ %> value="<%= blog.heading %>" <% } %>
+                                    />
+                                    <div class="invalid-feedback">Please enter heading.</div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="validationCustomUsername" class="form-label">Short Description</label>
+                            <div class="input-group has-validation">
+                                                            <!-- Checking is performed because edit/create have same form so in updation, we sent blog variable to display edited blog data else it will not be displayed  -->
+                                <textarea class="form-control" name="short_description" id="short_description"
+                                    required><% if(locals.blog && blog){ %><%= blog.short_description %> <% } %></textarea>
+                                <div class="invalid-feedback">Please enter short description.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="validationCustomUsername" class="form-label">Long Description</label>
+                            <div class="input-group has-validation">
+                                                            <!-- Checking is performed because edit/create have same form so in updation, we sent blog variable to display edited blog data else it will not be displayed  -->
+                                <textarea class="form-control" name="long_description" id="long_description"
+                                    required><% if(locals.blog && blog){ %><%= blog.long_description%> <% } %></textarea>
+                                <div class="invalid-feedback">Please enter long description.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="validationCustomUsername" class="form-label">Image </label>
+                            <div class="mb-3">
+                                <!-- Require is not a condition in update of blog because Image is already saved for blog while creatin, in updation, image will only be updated -->
+                                <input type="file" id="file" name="image" class="form-control" <% if(!locals.blog){ %>
+                                required <% } %> />
+                                    <div class="invalid-feedback">Please upload image</div>
+                            </div>
+                        </div>
+                        <!-- Displayed the edited blog image whic was saved before -->
+                        <% if(locals.blog && blog){ %>
+                            <div class="col-md-12">
+                                <div class="mb-3 d-flex justify-content-center">
+                                    <img src="/<%= blog.image %>" ` width="150" height="100">
+                                </div>
+                            </div>
+                            <% } %>
+                                <div class="col-12">
+                                    <button class="btn btn-success" type="submit">
+                                        <% if(locals.blog && blog) { %>
+                                            <%= `Update` %>
+                                                <% } else{ %>
+                                                    <%= `Create` %>
+                                                        <% } %> Blog
+                                    </button>
+                                </div>
+                    </form>
+
+        </div>
+    </div>
+
+    <%- include("../../layouts/footer/index.ejs") %>
+
+        <script>
+
+            // Checking the variable blog and its subitems to identify, blo doesnt ot undefined, if blog is undefined then  it will not match condition and doesnt render it 
+            const blog_stringify = JSON.stringify(`<% if(locals.blog && blog){ %><%-  blog["_id"] %> <% } %>`);
+            const blog = JSON.parse(blog_stringify);
+            console.log(`3456789 ---------- `,blog);
+            $(document).ready(function(){
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.querySelectorAll('.needs-validation')
+
+                // Loop over them and prevent submission
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            });
+            
+            
+            $("form#blog_form").submit(function(event){
+                event.preventDefault();
+                // FormData to send all blog data to ajax request
+                var form_Data = new FormData();
+                form_Data.append('heading',$('#heading').val());
+                form_Data.append('short_description',$('#short_description').val());
+                form_Data.append('long_description',$('#long_description').val());
+                var files = $('#file')[0].files;
+                // If there is image, then form data will contain image data only
+                if(files.length > 0 ){
+                    form_Data.append('image',files[0]);
+                }
+                // When blog variable is not empty, the operation will be performed for updation of it.
+                if (blog) {
+                    $.ajax({
+
+                        type: 'PATCH',
+                        url: '/blog/update_blog_form/' + blog,
+                        processData: false,
+                        contentType: false,
+                        data: form_Data,
+                        success: function (data) {
+                            if (data == true) {
+                                window.location.href = '/blog/list';
+                            }
+                        },
+                        error:function(data){
+                            alert(data.responseJSON.errors);
+                        }
+                    })
+
+                }
+                // When blog variable is empty, the operation will be for creation of a new blog .
+                else {
+                    $.ajax({
+                        type: 'post',
+                        url: '/blog/create_blog_form',
+                        processData: false,
+                        contentType: false,
+                        data: form_Data,
+                        success: function (data) {
+                            if (data == true) {
+                                window.location.href = '/blog/list';
+                            }
+                        },
+                        error:function(data){
+                            alert(data.responseJSON.errors);
+                        }
+                    })
+                }
+            });
+
+        </script>
+
+
+        </body>
+
+        </html>

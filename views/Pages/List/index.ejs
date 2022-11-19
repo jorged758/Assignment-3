@@ -1,0 +1,82 @@
+<!-- Includes the header section from layouts  -->
+<%- include("../../layouts/header/index.ejs") %>
+
+    <div class="container mb-5">
+        <div class="d-flex justify-content-between">
+            <h1 style="text-align: center; margin-bottom: 30px; margin-top: 30px">
+                Blog List
+            </h1>
+            <a style="text-align: center; margin-bottom: 30px; margin-top: 40px" href="/blog/create_blog_form"><button
+                    class="btn btn-info mr-2">Add Blog</button></a>
+        </div>
+        <div class="row">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Blog Image</th>
+                        <th scope="col">Blog Description</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                     <!-- all blogs data are looped through map function and every element is rendered and image and headin data is displayed only  -->
+                    <% blogs.map((item,index)=>{ %>
+                        <tr>
+                            <th scope="row">
+                                <%= ++index %>
+                            </th>
+                            <td><img src="/<%= item.image %>" ` width="150" height="100"></td>
+                            <td>
+                                <%= item.heading %>
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <a href="/blog/edit_blog_form/<%= item._id %>"><button
+                                            class="btn btn-success mr-2">Edit</button></a>
+                                    <form id="<%=item._id%>"><button class="btn btn-danger"
+                                            id="delete_btn_<%=item._id%>">Delete</button></form>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Includes the footer section from layouts  -->
+    <%- include("../../layouts/footer/index.ejs") %>
+
+        <script>
+            $(`form`).submit(function (event) {
+                event.preventDefault();
+                // get the id of the form Which gets clicked to recover the blog id to delete it from table
+                let item_id = $(this).attr(`id`);
+                // The confirmation dialog box to delete the item
+                if (confirm("Are you sure you want to delete")) {
+                    $.ajax({
+                        type: 'DELETE',
+                        // DELETE method to delete the item and URL is defined in routes.blog to perform the deletion of blog
+                        url: '/blog/delete_blog_form/' + item_id,
+                        // No processData and contentType (like json,text) will not be sent to the server
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            if (data == true) {
+                                // To refresh the page after a successful blog deletion
+                                window.location.href = '/blog/list';
+                            }
+                        },
+                        error: function (data) {
+                            // displays the error message
+                            alert(data.responseJSON.errors);
+                        }
+                    })
+                }
+            })
+        </script>
+
+        </body>
+
+        </html>
